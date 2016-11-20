@@ -17,20 +17,20 @@ instance FromJSON User
 main :: IO ()
 main = do
   putStrLn "Starting Server..."
-  scotty 3000 routes
+  scotty 3000 $ do
+    get "/hello/:name" $ do
+        name <- param "name"
+        text ("hello " <> name <> "!")
 
-routes :: ScottyM ()
-routes = get "/hello/:name" hello
+    get "/users" $ do
+      json allUsers
 
-hello :: ActionM ()
-hello = do
-  name <- param "name"
-  text $ "hello " <> name
+    get "/users/:id" $ do
+      id <- param "id"
+      json (filter (matchesId id) allUsers)
 
--- main = scotty 3000 $ do
---   get "/:word" $ do
---     beam <- param "word"
---     html $ mconcat ["<h1>Scotty, ", beam, " me up!</h1>"]
+matchesId :: Int -> User -> Bool
+matchesId id user = userId user == id
 
 allUsers :: [User]
 allUsers = [bob, jenny]
