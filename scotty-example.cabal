@@ -26,6 +26,7 @@ executable scotty-example-exe
   build-depends:       base
                      , scotty-example
                      , scotty
+                     , aeson
   default-language:    Haskell2010
 
 test-suite scotty-example-test
