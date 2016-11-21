@@ -4,7 +4,9 @@ module Main where
 import GHC.Generics
 import Data.Monoid (mconcat, (<>))
 
-import Web.Scotty
+import Web.Spock
+import Web.Spock.Config
+import qualified Data.Text as Text
 import Data.Aeson (FromJSON, ToJSON)
 
 data User = User { userId :: Int
@@ -16,27 +18,11 @@ instance FromJSON User
 
 main :: IO ()
 main = do
-  putStrLn "Starting Server..."
-  scotty 3000 $ do
-    get "/hello/:name" $ do
-        name <- param "name"
-        text ("hello " <> name <> "!")
+  spockCfg <- defaultSpockCfg () PCNoDatabase ()
+  runSpock 8080 $ spock spockCfg $ do
 
-    get "/users" $ do
-      json allUsers
+    get root $
+      text "Hello Spock!"
 
-    get "/users/:id" $ do
-      id <- param "id"
-      json (filter (matchesId id) allUsers)
-
-matchesId :: Int -> User -> Bool
-matchesId id user = userId user == id
-
-allUsers :: [User]
-allUsers = [bob, jenny]
-
-bob :: User
-bob = User { userId = 1, userName = "bob" }
-
-jenny :: User
-jenny = User { userId = 2, userName = "jenny" }
+    get ("hello" <//> var) $ \name ->
+      text (Text.concat ["Hello ", name, "!"])
