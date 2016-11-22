@@ -28,7 +28,7 @@ executable scotty-example-exe
                      , Spock
                      , text
                      , http-types
-                     , aeson
+                     , warp
   default-language:    Haskell2010
 
 test-suite scotty-example-test
